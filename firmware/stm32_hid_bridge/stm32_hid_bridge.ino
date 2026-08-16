@@ -1,7 +1,5 @@
-// STM32F4VE UART -> USB HID keyboard MVP
-// Arduino_Core_STM32: Black F407VE, USB support = HID Keyboard
-// Scanner UART: USART2  PA3=RX  PA2=TX (TX unused)
-// USB Mini (PA11/PA12) -> PC. Open Notepad, then send a scan.
+// STM32F4VE: UART scanner -> USB HID keyboard (TZ Mode 1, Appendix A LUT).
+// USART2 PA3 RX <- ESP GPIO17. Mini-USB = HID "BarcodeHID".
 
 #include <Keyboard.h>
 
@@ -12,20 +10,19 @@ static const size_t BUF_SIZE = 3072;
 static uint8_t buf[BUF_SIZE];
 static volatile size_t head = 0;
 static volatile size_t tail = 0;
-
 static uint8_t lut[256];
 
 static void lutInit() {
-  memset(lut, 0, sizeof(lut));  // 0 = ignore
+  memset(lut, 0, sizeof(lut));
   for (int c = 0x20; c <= 0x7E; ++c) {
     lut[c] = (uint8_t)c;
   }
-  lut[0x0A] = '\n';  // LF  -> Enter
-  lut[0x0D] = '\n';  // CR  -> Enter
-  lut[0x1C] = '\t';  // FS
-  lut[0x1D] = '\t';  // GS
-  lut[0x1E] = '\t';  // RS
-  lut[0x1F] = '\t';  // US
+  lut[0x0A] = '\n';
+  lut[0x0D] = '\n';
+  lut[0x1C] = '\t';
+  lut[0x1D] = '\t';
+  lut[0x1E] = '\t';
+  lut[0x1F] = '\t';
 }
 
 static bool pushByte(uint8_t b) {
@@ -49,7 +46,7 @@ static bool popByte(uint8_t *out) {
 
 void setup() {
   lutInit();
-  Serial2.begin(UART_BAUD);  // PA2/PA3 on Black F407VE
+  Serial2.begin(UART_BAUD);
   Keyboard.begin();
 }
 

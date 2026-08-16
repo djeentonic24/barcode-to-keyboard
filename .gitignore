@@ -1,4 +1,12 @@
-﻿_pptx_media/
-*.tmp
+﻿.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.arduino-cli/
+*.elf
+*.map
 .DS_Store
 Thumbs.db
+*.tmp
+_pptx_media/
+.cache/

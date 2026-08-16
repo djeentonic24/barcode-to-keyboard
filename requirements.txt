@@ -1,0 +1,2 @@
+pyserial>=3.5
+pdf417gen>=0.8.0

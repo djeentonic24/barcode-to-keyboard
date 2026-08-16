@@ -14,15 +14,17 @@ Build a **STM32 UART → USB HID keyboard bridge** on **NUCLEO-C071RB** plus a *
 
 Authoritative brief: `Pjt HID-UART.pptx`.
 
-## What already exists (MVP demo)
+## What already exists (Linux demo on F4VE)
 
-Path: `mvp/`
+Path: `firmware/` + `host/`
 
 | Piece | Role |
 |---|---|
-| `esp_scanner_sim/esp_scanner_sim.ino` | Fake scanner: AAMVA-like burst on ESP32 UART (GPIO17 TX) |
-| `pc_scanner_sim.py` | Same burst over USB-UART COM port (`pyserial`) |
-| `stm32_hid_bridge/stm32_hid_bridge.ino` | STM32F4VE Arduino sketch: USART2 RX → ring buffer → LUT → USB HID keyboard |
+| `firmware/esp_scanner` | Fake scanner: AAMVA burst on ESP32 UART (GPIO17 TX) + ST7789 PDF417 |
+| `firmware/stm32_hid_bridge` | STM32F4VE: USART2 RX → ring buffer → LUT → USB HID keyboard |
+| `host/demo_gui.py` | Linux GUI: trigger ESP, grab HID, compare LUT output |
+
+See `README.md` for wiring and flash.
 
 **Hypothesis proven locally:** UART burst → HID typing. Demo hardware is **STM32F4VE**, not C071. Host demo was/planned on **Linux**; product target is **Windows**.
 
