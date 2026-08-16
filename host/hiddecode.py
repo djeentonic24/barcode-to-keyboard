@@ -177,17 +177,18 @@ class HidGrab:
     def read_chars(self) -> Iterator[str]:
         while True:
             try:
-                raw = os.read(self.fd, EVENT_SIZE)
+                raw = os.read(self.fd, EVENT_SIZE * 64)
             except BlockingIOError:
                 return
             if len(raw) < EVENT_SIZE:
                 return
-            _sec, _usec, etype, code, value = struct.unpack(EVENT_FMT, raw)
-            if etype != EV_KEY:
-                continue
-            self.shift, text = decode_key(code, value, self.shift)
-            if text:
-                yield text
+            for off in range(0, len(raw) - EVENT_SIZE + 1, EVENT_SIZE):
+                _sec, _usec, etype, code, value = struct.unpack_from(EVENT_FMT, raw, off)
+                if etype != EV_KEY:
+                    continue
+                self.shift, text = decode_key(code, value, self.shift)
+                if text:
+                    yield text
 
     def collect(self, seconds: float, idle: float = 0.35) -> str:
         buf: list[str] = []

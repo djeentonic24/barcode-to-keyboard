@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import argparse
 import sys
-import time
 
 try:
     import serial
@@ -16,14 +15,22 @@ def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("port", nargs="?", default="/dev/ttyUSB1")
     args = p.parse_args()
-    ser = serial.Serial(args.port, 115200, timeout=1)
-    time.sleep(0.2)
-    ser.reset_input_buffer()
-    ser.write(b"s")
-    ser.flush()
-    time.sleep(0.4)
-    sys.stdout.write(ser.read(512).decode("utf-8", "replace"))
-    ser.close()
+    ser = serial.Serial()
+    ser.port = args.port
+    ser.baudrate = 115200
+    ser.timeout = 0.2
+    ser.dsrdtr = False
+    ser.rtscts = False
+    ser.dtr = False
+    ser.rts = False
+    ser.open()
+    try:
+        ser.reset_input_buffer()
+        ser.write(b"s")
+        ser.flush()
+        sys.stdout.write(ser.read(256).decode("utf-8", "replace"))
+    finally:
+        ser.close()
 
 
 if __name__ == "__main__":
